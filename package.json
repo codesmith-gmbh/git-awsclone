@@ -1,0 +1,9 @@
+{
+  "name": "git-awsclone",
+  "license": "MIT",
+  "version": "0.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}
