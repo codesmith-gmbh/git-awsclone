@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git@github.com:mokkabonna/inquirer-autocomplete-prompt.git"
+    "url": "git@github.com:codesmith-gmbh/git-awsclone.git"
   },
   "bin": {
     "git-awsclone": "./bin/git-awsclone"
