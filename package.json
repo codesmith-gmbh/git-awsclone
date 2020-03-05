@@ -20,14 +20,17 @@
   "devDependencies": {
     "@types/node": "^13.7.7",
     "ts-node": "^8.6.2",
+    "tslint": "^6.0.0",
     "typescript": "^3.8.3"
   },
   "scripts": {
+    "build": "tsc",
     "create": "npm run build && npm run test",
-    "runts": "ts-node src/index.ts",
-    "build": "tsc -p .",
+    "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
-    "test": "sudo npm i -g && git-awsclone",
-    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+    "preversion": "npm run lint",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
+    "runts": "ts-node src/index.ts",
+    "test": "sudo npm i -g && git-awsclone"
   }
 }
