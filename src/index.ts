@@ -5,6 +5,7 @@ import * as path from "path";
 import * as fs from 'fs';
 import * as aws from 'aws-sdk';
 import * as ia from 'inquirer-autocomplete-prompt'
+import * as commander from 'commander';
 
 inquirer.registerPrompt('autocomplete', ia);
 
@@ -39,33 +40,53 @@ const fetchRepositories = async (profile: string, region: string) => {
     return repositoryNames;
 };
 
-
-const main = async () => {
+const getProfileAndRegion = async (args: any): Promise<{ profile: string, region: string }> => {
     const profiles = await fetchProfileNames();
-    const profileResponse = await inquirer.prompt([{
-        type: 'autocomplete',
-        name: 'profile',
-        message: 'Which AWS profile to use?',
-        suggestOnly: false,
-        source: async (_, input) => {
-            return input ?
-                profiles.profiles.filter((p) => (p.startsWith(input))) : profiles.profiles;
-        },
-    }]);
-    const profile = profileResponse.profile;
-    const region = profiles.regions.get(profile);
+    let profile = args.profile;
+    if (!profile) {
+        const profileResponse = await inquirer.prompt([{
+            type: 'autocomplete',
+            name: 'profile',
+            message: 'Which AWS profile to use?',
+            suggestOnly: false,
+            source: async (_, input) => {
+                return input ?
+                    profiles.profiles.filter((p) => (p.startsWith(input))) : profiles.profiles;
+            },
+        }]);
+        profile = profileResponse.profile;
+    }
+    return {profile, region: profiles.regions.get(profile)};
+};
+
+
+const getRepository = async (args: any, profile: string, region: string): Promise<string> => {
+    if (args.repository) {
+        return args.repository;
+    }
     const repositories = await fetchRepositories(profile, region);
     const repositoryResponse = await inquirer.prompt([{
         type: 'autocomplete',
         name: 'repository',
-        message: 'Which repository to clone?',
+        message: 'Which CodeCommit repository to clone?',
         suggestOnly: false,
         source: async (_, input) => {
             return input ?
                 repositories.filter((r) => r.startsWith(input)) : repositories;
         }
     }]);
-    const repository: string = repositoryResponse.repository;
+    return repositoryResponse.repository;
+};
+
+const main = async () => {
+    const args = new commander.Command();
+    args
+        .option('-p, --profile <profile>', 'AWS Profile')
+        .option('-r, --repository <repository>', 'CodeCommit Repository');
+
+    args.parse(process.argv);
+    const {profile, region} = await getProfileAndRegion(args);
+    const repository = await getRepository(args, profile, region);
     const gitCloneCommand = `git clone -c credential.useHttpPath=true -c credential.helper='!/usr/local/bin/aws codecommit --profile=${profile} credential-helper $@' https://git-codecommit.${region}.amazonaws.com/v1/repos/${repository}`;
     const shell = require('shelljs');
     await shell.exec(gitCloneCommand);
