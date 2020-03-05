@@ -22,7 +22,7 @@
     "create": "npm run build && npm run test",
     "runts": "ts-node src/index.ts",
     "build": "tsc -p .",
-    "test": "sudo npm i -g && pizza",
+    "test": "sudo npm i -g && git-awsclone",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
   }
 }
