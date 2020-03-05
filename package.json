@@ -1,5 +1,5 @@
 {
-  "name": "git-awsclone",
+  "name": "@codesmith-gmbh/git-awsclone",
   "license": "MIT",
   "version": "0.0.0",
   "main": "./out/index.js",
