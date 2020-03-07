@@ -7,6 +7,8 @@ import * as aws from 'aws-sdk';
 import * as ia from 'inquirer-autocomplete-prompt'
 import * as commander from 'commander';
 
+const defaultRegion = 'us-east-1';
+
 inquirer.registerPrompt('autocomplete', ia);
 
 interface Profiles {
@@ -22,10 +24,8 @@ const fetchProfileNames = async (): Promise<Profiles> => {
     let regions = new Map<string, string>();
     Object.keys(configFile).forEach((profile) => {
         const region = configFile[profile]?.region;
-        if (region) {
-            profiles.push(profile);
-            regions = regions.set(profile, region);
-        }
+        profiles.push(profile);
+        regions = regions.set(profile, region || defaultRegion);
     });
     profiles.sort();
     return {profiles, regions};
